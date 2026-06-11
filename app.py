@@ -1,5 +1,6 @@
 import streamlit as st
 import pandas as pd
+import altair as alt
 
 
 @st.cache_data
@@ -43,6 +44,26 @@ with col4:
     # st.write(top_2_df)
     # 2. Display it cleanly as a mini table inside the column
     st.dataframe(top_2_df, hide_index=True, use_container_width=True)
+
+st.bar_chart(df.groupby('Item', as_index=False)['Quantity'].sum(), x= "Item", y="Quantity", color="orange")
+
+mean_value = float(df.groupby("Item")["Total Spent"].sum().mean())
+
+chart = alt.Chart(df.groupby("Item", as_index=False)["Total Spent"].sum()).mark_bar().encode(
+    x=alt.X("Item:N", title="Inventory Items"),
+    y=alt.Y("Total Spent:Q", title="Total amount spent by the customers"),
+    color=alt.condition(
+        alt.datum["Total Spent"] > mean_value,
+        alt.value("#46F846"),
+        alt.value('#00008B')        
+    )
+)
+
+st.altair_chart(chart)
+
+
+
+
 st.subheader("cleaned data")
 st.dataframe(df.head(5))
 available_columns = df.columns
