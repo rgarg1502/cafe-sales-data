@@ -45,6 +45,7 @@ with col4:
     # 2. Display it cleanly as a mini table inside the column
     st.dataframe(top_2_df, hide_index=True, use_container_width=True)
 
+st.subheader("Top selling Items")
 st.bar_chart(df.groupby('Item', as_index=False)['Quantity'].sum(), x= "Item", y="Quantity", color="orange")
 
 mean_value = float(df.groupby("Item")["Total Spent"].sum().mean())
@@ -58,10 +59,24 @@ chart = alt.Chart(df.groupby("Item", as_index=False)["Total Spent"].sum()).mark_
         alt.value('#00008B')        
     )
 )
-
+st.subheader("Items representing generating highest revenue")
 st.altair_chart(chart)
 
+st.subheader("Pie chart representing payment method wise usage")
+pie_chart_data = df["Payment Method"].value_counts().reset_index()
 
+pie_chart = alt.Chart(pie_chart_data).mark_arc(innerRadius=50).encode(
+    theta = alt.Theta(field="count", type="quantitative"),
+    color = alt.Color(field="Payment Method", type="nominal")
+)
+
+st.altair_chart(pie_chart)
+
+st.subheader("Performance of locations")
+st.bar_chart(df.groupby("Location", as_index=False)["Total Spent"].sum(), x="Location", y="Total Spent", color="#9c639e")
+
+st.subheader("Daily Sales Trend")
+st.line_chart(df[["Transaction Date","Total Spent"]],x="Transaction Date", y="Total Spent")
 
 
 st.subheader("cleaned data")
